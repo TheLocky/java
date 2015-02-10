@@ -51,7 +51,7 @@ public class Matrix2D {
 	
 	public static Matrix2D mul(Matrix2D a, Matrix2D b) {
 		if (a.sizec() != b.sizer()) {
-			Out.error("Умножение невозможно");
+			Out.error("РЈРјРЅРѕР¶РµРЅРёРµ РЅРµРІРѕР·РјРѕР¶РЅРѕ");
 			return null;
 		}
 		Matrix2D rez = new Matrix2D(a.sizer(),b.sizec());

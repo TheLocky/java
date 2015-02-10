@@ -6,12 +6,12 @@ class Main {
 		Matrix2D tmp = new Matrix2D(2);
 		tmp.cell(0, 0, 1.2);
 		tmp.cell(1, 1, -3.5);
-		Out.msg("Матрица А:");
+		Out.msg("РњР°С‚СЂРёС†Р° A:");
 		tmp.print();
 		Matrix2D row = tmp.col(0);
-		Out.msg("Матрица B:");
+		Out.msg("РњР°С‚СЂРёС†Р° B:");
 		row.print();
-		Out.msg("Пробуем умножить...");
+		Out.msg("РџСЂРѕР±СѓРµРј СѓРјРЅРѕР¶РёС‚СЊ...");
 		Matrix2D c = Matrix2D.mul(tmp, row);
 		c.print();
 	}
