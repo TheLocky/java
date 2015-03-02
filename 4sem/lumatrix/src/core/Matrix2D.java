@@ -15,24 +15,25 @@ public class Matrix2D {
 	public Matrix2D(int r, int c) {
 		if ((r > 0) && (c > 0)) {
 			M = new double[r][c];
-			rows = r;
-			cols = c;
 		}
+		rows = r;
+		cols = c;
 		det_type();
 	}
 
 	public Matrix2D(int rc) {
 		if (rc > 0) {
 			M = new double[rc][rc];
-			rows = rc;
-			cols = rc;
 		}
+		rows = rc;
+		cols = rc;
 		det_type();
 	}
 
 	public Matrix2D(Matrix2D src) {
 		this.rows = src.rows;
 		this.cols = src.cols;
+		this.type = src.type;
 		if (src.type != MatrixType.nullmatrix) {
 			this.M = new double[this.rows][this.cols];
 			for (int i = 0; i < this.rows; ++i) {
@@ -49,6 +50,23 @@ public class Matrix2D {
 		return cols;
 	}
 
+	public void resize(int r, int c) {
+		int minr = Math.min(rows, r);
+		int minc = Math.min(cols, c);
+		double newM[][] = new double[r][c];
+		for (int i = 0; i < minr; ++i) {
+			System.arraycopy(M[i], 0, newM[i], 0, minc);
+		}
+		M = newM;
+		rows = r;
+		cols = c;
+		det_type();
+	}
+
+	public void resize(int rc) {
+		this.resize(rc, rc);
+	}
+
 	public boolean is_cube() {
 		return (rows == cols);
 	}
@@ -57,7 +75,7 @@ public class Matrix2D {
 		return type;
 	}
 
-	public void det_type() {
+	private void det_type() {
 		if ((rows == 0) || (cols == 0))
 			type = MatrixType.nullmatrix;
 		else if ((rows == 1) && (cols == 1))
@@ -99,14 +117,38 @@ public class Matrix2D {
 		return rez;
 	}
 
-	public void print() {
+	private String getspace(int len) {
+		String rez = "";
+		for (int i = 0; i < len; ++i) {
+			rez += " ";
+		}
+		return rez;
+	}
+
+	public void print(int num) {
+		String rez = "";
+		String form = String.format("%s%d%s", "%.", num, "f ");
+		int maxlen = 0;
 		for (int i = 0; i < rows; ++i) {
 			for (int j = 0; j < cols; ++j) {
-				System.out.print(M[i][j]);
-				System.out.print(" ");
+				String cl = String.format(form, M[i][j]);
+				int len = cl.length() - 4;
+				if (len > maxlen)
+					maxlen = len;
+				String prev = String.format("{%d}", len);
+				rez += prev + cl;
 			}
-			System.out.println();
+			rez += "\n";
 		}
+		for (int i = 1; i <= maxlen; ++i) {
+			String find = String.format("\\{%d\\}", i);
+			rez = rez.replaceAll(find, getspace(maxlen - i));
+		}
+		Out.msg(rez);
+	}
+
+	public void print() {
+		print(2);
 	}
 
 	public void setnull() {
@@ -143,6 +185,14 @@ public class Matrix2D {
 		this.setrandom(1, 0);
 	}
 
+	public void setfrommatrix(Matrix2D src, int srbeg, int scbeg,
+			int drbeg, int dcbeg, int rcount, int ccount) {
+		int srend = srbeg + rcount;
+		for (int si = srbeg, di = drbeg; si < srend; ++si, ++di) {
+			System.arraycopy(src.M[si], scbeg, this.M[di], dcbeg, ccount);
+		}
+	}
+
 	public void transpose() {
 		if ((type == MatrixType.nullmatrix) || (type == MatrixType.val))
 			return;
@@ -158,6 +208,24 @@ public class Matrix2D {
 		int tmp = rows;
 		rows = cols;
 		cols = tmp;
+		
+		det_type();
+	}
+	
+	public void powelems(double deg) {
+		for (int i = 0; i < rows; ++i) {
+			for (int j = 0; j < cols; ++j) {
+				M[i][j] = Math.pow(M[i][j], deg);
+			}
+		}
+	}
+	
+	public void mulelems(double mn) {
+		for (int i = 0; i < rows; ++i) {
+			for (int j = 0; j < cols; ++j) {
+				M[i][j] *= mn;
+			}
+		}
 	}
 
 	public static Matrix2D mul(Matrix2D a, Matrix2D b) {
@@ -182,25 +250,26 @@ public class Matrix2D {
 		}
 		return rez;
 	}
-	
+
 	public static Matrix2D sub(Matrix2D a, Matrix2D b) {
 		return sub(a, b, false);
 	}
-	
+
 	public static Matrix2D sub(Matrix2D a, Matrix2D b, boolean abs) {
 		if ((a.rows != b.rows) && (a.cols != b.cols)) {
 			Out.error("[SUB] Матрицы должны быть одинаковых размеров!");
 			return null;
 		}
-		
+
 		Matrix2D rez = new Matrix2D(a.rows, a.cols);
 		for (int i = 0; i < a.rows; ++i) {
 			for (int j = 0; j < a.cols; ++j) {
 				rez.M[i][j] = a.M[i][j] - b.M[i][j];
-				if (abs) rez.M[i][j] = Math.abs(rez.M[i][j]);
+				if (abs)
+					rez.M[i][j] = Math.abs(rez.M[i][j]);
 			}
 		}
-		
+
 		return rez;
 	}
 
