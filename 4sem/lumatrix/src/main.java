@@ -3,6 +3,7 @@ import core.*;
 class Main {
 
 	public static void lab13test() {
+		Out.msg("Аппроксимация");
 		Matrix2D A = new Matrix2D(5, 1);
 		A.cell(0, 0, 0);
 		A.cell(1, 0, 1);
@@ -21,6 +22,7 @@ class Main {
 	}
 
 	public static void lab12test() {
+		Out.msg("Интерполяция");
 		Matrix2D A = new Matrix2D(4, 1);
 		A.cell(0, 0, 0);
 		A.cell(1, 0, 1);
@@ -32,6 +34,7 @@ class Main {
 		B.cell(2, 0, 3);
 		B.cell(3, 0, 0);
 		Interpolation inter = new Interpolation(A, B);
+		inter.getLine().print();
 		Out.msg(String.format("%f", inter.getF(2)));
 	}
 
@@ -54,8 +57,9 @@ class Main {
 	}
 
 	public static void main(String[] args) {
-		// lab11test();
-		// lab12test();
+		lab11test();
+		lab12test();
+		Out.ln();
 		lab13test();
 	}
 }
