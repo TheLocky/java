@@ -24,8 +24,31 @@ public class Polynom {
 		}
 		return 0;
 	}
-	
+
 	public Matrix2D getLine() {
 		return line;
+	}
+
+	public void print() {
+		if (line == null)
+			return;
+		if (line.get_type() == MatrixType.vertvector) {
+			line.transpose();
+		}
+		if (line.get_type() == MatrixType.horvector) {
+			for (int i = line.sizec() - 1; i >= 0; i--) {
+				String sign = "", perem = "";
+				if (Math.abs(line.cell(0, i)) == 0.000001)
+					continue;
+				if ((i != line.sizec() - 1) && (line.cell(0, i) > 0.000001))
+					sign = "+";
+				if (i != 0)
+					perem = String.format("*x^%d", i);
+				Out.msg(String.format("%s%.2f%s", sign, line.cell(0, i), perem));
+			}
+			Out.ln();
+			return;
+		}
+		return;
 	}
 }

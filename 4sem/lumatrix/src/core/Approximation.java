@@ -1,10 +1,39 @@
 package core;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.Scanner;
+
 import core.Matrix2D.MatrixType;
 
 public class Approximation extends Polynom {
 	
+	public Approximation(String filename) {
+		Scanner scan = null;
+		try {
+			scan = new Scanner(new BufferedReader(new FileReader(filename)));
+		} catch (FileNotFoundException e) {
+			Out.error("[Interpolation] Не могу открыть файл");
+		}
+		if (scan != null) {
+			int n = scan.nextInt();
+			int deg = scan.nextInt();
+			Matrix2D per, val;
+			per = new Matrix2D(n, 1);
+			val = new Matrix2D(n, 1);
+			per.setfromscanner(scan);
+			val.setfromscanner(scan);
+			start(per,val, deg);
+			scan.close();
+		}
+	}
+	
 	public Approximation(Matrix2D perems, Matrix2D vals, int degree) {
+		start(perems, vals, degree);
+	}
+	
+	private void start(Matrix2D perems, Matrix2D vals, int degree) {
 		Matrix2D x = new Matrix2D(perems);
 		Matrix2D f = new Matrix2D(vals);
 		if (x.get_type() == MatrixType.horvector) x.transpose();

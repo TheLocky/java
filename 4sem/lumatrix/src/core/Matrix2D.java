@@ -1,6 +1,7 @@
 package core;
 
 import java.util.Random;
+import java.util.Scanner;
 
 public class Matrix2D {
 	private double M[][];
@@ -150,6 +151,15 @@ public class Matrix2D {
 	public void print() {
 		print(2);
 	}
+	
+	public void printtofile(String filename, int num) {
+		Out.setFile(filename);
+		print(num);
+	}
+	
+	public void printtofile(String filename) {
+		printtofile(filename, 2);
+	}
 
 	public void setnull() {
 		if (type == MatrixType.nullmatrix)
@@ -191,6 +201,27 @@ public class Matrix2D {
 		for (int si = srbeg, di = drbeg; si < srend; ++si, ++di) {
 			System.arraycopy(src.M[si], scbeg, this.M[di], dcbeg, ccount);
 		}
+	}
+	
+	public void setfromscanner(Scanner scan) {
+		for (int i = 0; i < rows; ++i) {
+			for (int j = 0; j < cols; ++j) {
+				if (!scan.hasNextDouble()) return;
+				M[i][j] = scan.nextDouble();
+			}
+		}				
+	}
+	
+	public void setrow(double [] line, int num) {
+		int str = Math.min(Math.max(num, 0), rows);
+		int count = Math.min(cols, line.length);
+		System.arraycopy(line, 0, M[str], 0, count);
+	}
+	
+	public void setcol(double [] line, int num) {
+		this.transpose();
+		this.setrow(line, num);
+		this.transpose();
 	}
 
 	public void transpose() {
