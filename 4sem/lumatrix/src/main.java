@@ -4,16 +4,20 @@ class Main {
 
 	public static void lab13test() {
 		Out.msgln("Векторы:");
-		Matrix2D A = new Matrix2D(1, 5);
-		double vec[] = {0, 1, 2, 4, 0};
+		Matrix2D A = new Matrix2D(1, 100);
+		double vec[] = new double[100];
+		for (int i = 0; i < 100; ++i) {
+			vec[i] = i + 1;
+		}
 		A.setrow(vec, 0);
-		A.print();
-		Matrix2D B = new Matrix2D(1, 5);
-		double vec2[] = {4, 2, 4, 2, 4};
-		B.setrow(vec2, 0);
-		B.print();
+		Matrix2D B = new Matrix2D(1, 100);
+		B.setrandom(10, 5);
+		for (int i = 0; i < 100; ++i) {
+			Out.msg(String.format("(%f;%f)", A.cell(0, i), B.cell(0, i)));
+		}
+		Out.ln();
 		Out.msgln("Аппроксимация");
-		Approximation approx = new Approximation(A, B, 3);
+		Approximation approx = new Approximation(A, B, 50);
 		approx.print();
 	}
 

@@ -44,7 +44,7 @@ public class Polynom {
 					sign = "+";
 				if (i != 0)
 					perem = String.format("*x^%d", i);
-				Out.msg(String.format("%s%.2f%s", sign, line.cell(0, i), perem));
+				Out.msg(String.format("%s%f%s", sign, line.cell(0, i), perem));
 			}
 			Out.ln();
 			return;

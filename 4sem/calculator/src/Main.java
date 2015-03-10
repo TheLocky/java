@@ -4,9 +4,9 @@ import java.util.prefs.Preferences;
 public class Main {
 
 	public static void main(String[] args) {
-		//getPrefs();
-		//new MainWindow();
-		System.out.println(String.format("%5i", 1111111111));
+		getPrefs();
+		new MainWindow();
+		//System.out.println(String.format("%5i", 1111111111));
 	}
 
 	private static void getPrefs() {
