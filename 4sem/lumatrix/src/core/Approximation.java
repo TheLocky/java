@@ -56,13 +56,15 @@ public class Approximation extends Polynom {
 				for (int i = 0; i < degree + 1; ++i) {
 					double leftsum = 0, rightsum = 0;
 					for (int j = 0; j < x.sizer(); ++j) {
-						leftsum += Math.pow(x.cell(j, 0), k + i);
-						rightsum += Math.pow(x.cell(j, 0), k) * f.cell(j, 0);
+						leftsum += 2 * Math.pow(x.cell(j, 0), k + i);
+						rightsum += 2 * Math.pow(x.cell(j, 0), k) * f.cell(j, 0);
 					}
 					left.cell(k, i, leftsum);
 					right.cell(k, 0, rightsum);
 				}
 			}
+			left.print();
+			right.print();
 			LUMethod lu = new LUMethod(left);
 			super.line = lu.solve(right);
 			super.line.transpose();

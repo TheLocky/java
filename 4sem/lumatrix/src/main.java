@@ -17,7 +17,7 @@ class Main {
 		}
 		Out.ln();
 		Out.msgln("Аппроксимация");
-		Approximation approx = new Approximation(A, B, 50);
+		Approximation approx = new Approximation(A, B, 5);
 		approx.print();
 	}
 

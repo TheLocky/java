@@ -38,9 +38,9 @@ public class Polynom {
 		if (line.get_type() == MatrixType.horvector) {
 			for (int i = line.sizec() - 1; i >= 0; i--) {
 				String sign = "", perem = "";
-				if (Math.abs(line.cell(0, i)) == 0.000001)
+				if (Math.abs(line.cell(0, i)) == 0.000000000001)
 					continue;
-				if ((i != line.sizec() - 1) && (line.cell(0, i) > 0.000001))
+				if ((i != line.sizec() - 1) && (line.cell(0, i) > 0.000000000001))
 					sign = "+";
 				if (i != 0)
 					perem = String.format("*x^%d", i);
