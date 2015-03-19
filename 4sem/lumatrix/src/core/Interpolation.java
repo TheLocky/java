@@ -7,6 +7,8 @@ import core.Matrix2D.MatrixType;
 
 public class Interpolation extends Polynom {
 	
+	private LUMethod lu;
+	
 	public Interpolation(String filename) {
 		Scanner scan = null;
 		try {
@@ -48,8 +50,7 @@ public class Interpolation extends Polynom {
 			x.powelems(i);
 			tmp.setfrommatrix(x, 0, 0, 0, i, x.sizer(), 1);
 		}
-		LUMethod lu = new LUMethod(tmp);
+		lu = new LUMethod(tmp);
 		super.line = lu.solve(f);
-		super.line.transpose();
 	}
 }

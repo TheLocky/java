@@ -223,6 +223,11 @@ public class Matrix2D {
 		this.setrow(line, num);
 		this.transpose();
 	}
+	
+	public double[] getrow(int num) {
+		int str = Math.min(Math.max(num, 0), rows);
+		return M[str];
+	}
 
 	public void transpose() {
 		if ((type == MatrixType.nullmatrix) || (type == MatrixType.val))

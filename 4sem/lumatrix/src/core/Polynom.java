@@ -1,9 +1,12 @@
 package core;
 
+import java.util.Formatter;
+
 import core.Matrix2D.MatrixType;
 
 public class Polynom {
 	protected Matrix2D line;
+	private static final double EPSIL = 0.000000000001;
 
 	public Polynom() {
 		line = null;
@@ -38,13 +41,21 @@ public class Polynom {
 		if (line.get_type() == MatrixType.horvector) {
 			for (int i = line.sizec() - 1; i >= 0; i--) {
 				String sign = "", perem = "";
-				if (Math.abs(line.cell(0, i)) == 0.000000000001)
+				if (Math.abs(line.cell(0, i)) <= EPSIL)
 					continue;
-				if ((i != line.sizec() - 1) && (line.cell(0, i) > 0.000000000001))
+				if ((i != line.sizec() - 1) && (line.cell(0, i) > EPSIL))
 					sign = "+";
 				if (i != 0)
 					perem = String.format("*x^%d", i);
-				Out.msg(String.format("%s%f%s", sign, line.cell(0, i), perem));
+				@SuppressWarnings("resource")
+				Formatter fmt = new Formatter();
+				String outs = fmt.format("%g", line.cell(0, i)).toString();
+				int index = outs.indexOf("e");
+				if (index > -1) {
+					int deg = Integer.parseInt(outs.substring(index+1));
+					outs = String.format("%s*10^(%d)", outs.substring(0, index-1), deg);
+				}
+				Out.msg(String.format("%s%s%s", sign, outs, perem));
 			}
 			Out.ln();
 			return;

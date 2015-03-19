@@ -3,7 +3,7 @@ import core.*;
 class Main {
 
 	public static void lab13test() {
-		Out.msgln("Векторы:");
+		Out.msgln("Точки:");
 		Matrix2D A = new Matrix2D(1, 100);
 		double vec[] = new double[100];
 		for (int i = 0; i < 100; ++i) {
@@ -11,9 +11,9 @@ class Main {
 		}
 		A.setrow(vec, 0);
 		Matrix2D B = new Matrix2D(1, 100);
-		B.setrandom(10, 5);
+		B.setrandom(100, 0);
 		for (int i = 0; i < 100; ++i) {
-			Out.msg(String.format("(%f;%f)", A.cell(0, i), B.cell(0, i)));
+			Out.msg(String.format("(%.2f;%.2f)", A.cell(0, i), B.cell(0, i)));
 		}
 		Out.ln();
 		Out.msgln("Аппроксимация");

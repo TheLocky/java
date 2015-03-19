@@ -8,6 +8,13 @@ import java.util.Scanner;
 import core.Matrix2D.MatrixType;
 
 public class Approximation extends Polynom {
+	private double xpows[][]; //массив степеней Х-сов 
+	private double fs[]; //массив значений
+	LUMethod lu;
+	Matrix2D right;
+	int N, M;
+	Interpolation interp;
+	
 	
 	public Approximation(String filename) {
 		Scanner scan = null;
@@ -36,38 +43,60 @@ public class Approximation extends Polynom {
 	private void start(Matrix2D perems, Matrix2D vals, int degree) {
 		Matrix2D x = new Matrix2D(perems);
 		Matrix2D f = new Matrix2D(vals);
-		if (x.get_type() == MatrixType.horvector) x.transpose();
-		if (f.get_type() == MatrixType.horvector) f.transpose();
-		if ((x.get_type() != MatrixType.vertvector) || 
-				(f.get_type() != MatrixType.vertvector)) {
+		if (x.get_type() == MatrixType.vertvector) x.transpose();
+		if (f.get_type() == MatrixType.vertvector) f.transpose();
+		if ((x.get_type() != MatrixType.horvector) || 
+				(f.get_type() != MatrixType.horvector)) {
 			throw new RuntimeException("В конструктор передан(ы) не вектор(ы)");
 		}
-		if (x.sizer() <= degree) {
+		
+		N = degree + 1; // Учитываем свободный член
+		M = x.sizec();
+		
+		if (N > M) {
 			throw new RuntimeException("Степень многочлена превышает возможную");
 		}
-		else if (x.sizer() == degree + 1) {
+		else if (M == N) {
 			Out.msg("Вызов интерполяции (степень многочлена равна количеству точек - 1)");
-			super.line = new Matrix2D(new Interpolation(perems, vals).line);
+			interp = new Interpolation(perems, vals);
+			super.line = new Matrix2D(interp.line);
 		}
 		else {
-			Matrix2D left = new Matrix2D(degree + 1);
-			Matrix2D right = new Matrix2D(degree + 1, 1);
-			for (int k = 0; k < degree + 1; ++k) {
-				for (int i = 0; i < degree + 1; ++i) {
-					double leftsum = 0, rightsum = 0;
-					for (int j = 0; j < x.sizer(); ++j) {
-						leftsum += 2 * Math.pow(x.cell(j, 0), k + i);
-						rightsum += 2 * Math.pow(x.cell(j, 0), k) * f.cell(j, 0);
-					}
-					left.cell(k, i, leftsum);
-					right.cell(k, 0, rightsum);
+			int max = 2 * (N - 1) + 1;
+			xpows = new double[M][max];
+			
+			for (int i = 0; i < M; ++i) {
+				double tmp = 1;
+				for (int j = 0; j < max; ++j) {
+					xpows[i][j] = tmp;
+					tmp *= x.cell(0, i);
 				}
 			}
-			left.print();
-			right.print();
-			LUMethod lu = new LUMethod(left);
+			
+			fs = new double[M];
+			System.arraycopy(f.getrow(0), 0, fs, 0, M);
+			
+			double sum;			
+			Matrix2D left = new Matrix2D(N);
+			right = new Matrix2D(N, 1);
+			for (int i = 0; i < N; ++i) {
+				for (int j = 0; j < N; ++j) {
+					sum = 0;
+					for (int k = 0; k < M; ++k) {
+						sum += xpows[k][i+j];
+					}
+					left.cell(i, j, sum);
+				}
+				sum = 0;
+				for (int k = 0; k < M; ++k) {
+					sum += xpows[k][i] * fs[k];
+				}
+				right.cell(i, 0, sum);
+			}
+			
+			lu = new LUMethod(left);
 			super.line = lu.solve(right);
-			super.line.transpose();
 		}
 	}
+	
 }
