@@ -245,14 +245,12 @@ public class Draw extends JPanel implements Module {
 		if (direct == 0) 
 			return;
 		direct = Math.abs(direct);
-		double deltaX = (brd[1] - brd[0]) * direct / 2;
-		double deltaY = (brd[3] - brd[2]) * direct / 2;
 		double spotX = w2x(x, savedGraph.getWidth());
 		double spotY = h2y(y, savedGraph.getHeight());
-		brd[0] = spotX - deltaX;
-		brd[1] = spotX + deltaX;
-		brd[2] = spotY - deltaY;
-		brd[3] = spotY + deltaY;
+		brd[0] = spotX - (spotX - brd[0]) * direct;
+		brd[1] = spotX + (brd[1] - spotX) * direct;
+		brd[2] = spotY - (spotY - brd[2]) * direct;
+		brd[3] = spotY + (brd[3] - spotY) * direct;
 		configFont();
 		paintAll();
 		paint(this.getGraphics());
@@ -322,7 +320,7 @@ public class Draw extends JPanel implements Module {
 		// ---------------
 
 		// Y scale
-		int minIntY = (int) brd[2] - 1;
+		int minIntY = (int) (brd[2] - stepX);
 		double iY = minIntY;
 		g.setFont(fntForY);
 		while (iY < brd[3]) {
@@ -335,7 +333,7 @@ public class Draw extends JPanel implements Module {
 			iY += stepY;
 		}
 		// X scale
-		int minIntX = (int) brd[0] - 1;
+		int minIntX = (int) (brd[0] - stepY);
 		double iX = minIntX;
 		AffineTransform tf = new AffineTransform();
 		tf.rotate(Math.toRadians(-90));

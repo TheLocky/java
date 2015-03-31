@@ -43,7 +43,7 @@ public class MainWindow extends JFrame {
 		Polynom parabola = new Polynom(tmp);
 		parabola.setColor(Color.RED);
 		// points
-		double[][] points = { { -2, -1, 0, 1, 2 }, { 4, 1, 0, 1, 4 } };
+		double[][] points = { { -2, -1, 0, 1, 2 }, { 4, 1, 4, 1, 4 } };
 		initDraw.add("Points", points.clone());
 		initDraw.add("Polynom", parabola);
 		Pack ans = drawModule.Request(initDraw);
@@ -60,7 +60,7 @@ public class MainWindow extends JFrame {
 					if (rot < 0) { // UP
 						dir[0] = 0.9;
 					} else { // DOWN
-						dir[0] = 1.1;
+						dir[0] = 1.1; 
 					}
 					wheel.add("Scale:direction", dir.clone());
 					wheel.add("Scale:point", e.getPoint().clone());
