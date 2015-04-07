@@ -24,6 +24,7 @@ public class MainWindow extends JFrame {
 
 	MainWindow() {
 		super("GraphViewer");
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setSize(500, 500);
 		initDrawModule();
 		setVisible(true);

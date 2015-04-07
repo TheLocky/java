@@ -22,6 +22,7 @@ public class Draw extends JPanel implements Module {
     private static final long serialVersionUID = 1L;
     private static final int axisSize = 50;
     private double xMin, xMax, yMin, yMax, stepX, stepY;
+    private double xLim, yLim; 
     private boolean brdIsSet;
     private BufferedImage savedImg;
     private BufferedImage savedGraph;
@@ -37,6 +38,8 @@ public class Draw extends JPanel implements Module {
         bgcolor = Color.white;
         setBorder(new EmptyBorder(0, 0, 0, 0));
         panelResized = true;
+        xLim = 1000;
+        yLim = 1000;
         addComponentListener(new ComponentAdapter() {
 
             @Override
@@ -175,10 +178,10 @@ public class Draw extends JPanel implements Module {
     }
 
     private void setBorders(double x1, double x2, double y1, double y2) {
-        xMin = x1;
-        xMax = x2;
-        yMin = y1;
-        yMax = y2;
+    	xMin = x1;
+    	xMax = x2;
+    	yMin = y1;
+    	yMax = y2;
         brdIsSet = true;
         configFont();
         configSteps();
@@ -296,12 +299,18 @@ public class Draw extends JPanel implements Module {
         direct = Math.abs(direct);
         double spotX = w2x(x, savedGraph.getWidth());
         double spotY = h2y(y, savedGraph.getHeight());
-        System.out.println(x + " " + y + " " + savedGraph.getHeight() + " " + savedImg.getHeight());
-        System.out.println(spotX + " " + spotY);
         double xMinNew = spotX - (spotX - xMin) * direct;
         double xMaxNew = spotX + (xMax - spotX) * direct;
         double yMinNew = spotY - (spotY - yMin) * direct;
         double yMaxNew = spotY + (yMax - spotY) * direct;
+        if (xMaxNew - xMinNew >= xLim) {
+        	xMinNew = xMin;
+        	xMaxNew = xMax;
+        }
+        if (yMaxNew - yMinNew >= yLim) {
+        	yMinNew = yMin;
+        	yMaxNew = yMax;
+        }
         setBorders(xMinNew, xMaxNew, yMinNew, yMaxNew);
         paintAll();
         paint(this.getGraphics());
