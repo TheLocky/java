@@ -38,8 +38,8 @@ public class Draw extends JPanel implements Module {
         bgcolor = Color.white;
         setBorder(new EmptyBorder(0, 0, 0, 0));
         panelResized = true;
-        xLim = 1000;
-        yLim = 1000;
+        xLim = 500;
+        yLim = 500;
         addComponentListener(new ComponentAdapter() {
 
             @Override
@@ -53,26 +53,26 @@ public class Draw extends JPanel implements Module {
 
     @Override
     public void paint(Graphics g) {
-        if (panelResized) {
-            savedImg = new BufferedImage(getWidth(), getHeight(),
-                    BufferedImage.TYPE_INT_RGB);
-            savedGraph = new BufferedImage(getWidth() - axisSize, getHeight()
-                    - axisSize, BufferedImage.TYPE_INT_RGB);
-            configSteps();
-            paintAll();
-            panelResized = false;
+        if (g != null) {
+            if (panelResized) {
+                savedImg = new BufferedImage(getWidth(), getHeight(),
+                        BufferedImage.TYPE_INT_RGB);
+                savedGraph = new BufferedImage(getWidth() - axisSize, getHeight()
+                        - axisSize, BufferedImage.TYPE_INT_RGB);
+                configSteps();
+                paintAll();
+                panelResized = false;
+            }
+            g.drawImage(savedImg, 0, 0, null);
+            g.drawImage(savedGraph, axisSize + 1, 0, null);
         }
-        g.drawImage(savedImg, 0, 0, null);
-        g.drawImage(savedGraph, axisSize + 1, 0, null);
     }
 
     private void paintAll() {
-        if (isInitalized()) {
-            drawBackGround();
-            drawAxis();
-            drawPoints();
-            drawPolynoms();
-        }
+        drawBackGround();
+        drawAxis();
+        drawPoints();
+        drawPolynoms();
     }
 
     @Override
@@ -97,38 +97,43 @@ public class Draw extends JPanel implements Module {
             }
         }
         if (cmd != null) {
-            if (cmd.contains("clear")) {
+            if (cmd.contains("clearAllElem")) {
+                points = null;
+                polynoms.removeAllElements();
+                paintAll();
+                paint(this.getGraphics());
+            }
+            if (cmd.contains("Points:clear")) {
+                points = null;
                 clearGraph();
+                drawPolynoms();
+                paint(this.getGraphics());
+            }
+            if (cmd.contains("Polynom:clearAll")) {
+                polynoms.removeAllElements();
+                clearGraph();
+                drawPoints();
+                paint(this.getGraphics());
             }
             if (cmd.contains("add")) {
                 if (pointArr != null) {
                     if ((pointArr.length >= 2)
                             && (pointArr[0].length == pointArr[1].length)) {
                         points = pointArr;
-                        clearGraph();
-                        drawPoints();
-                        drawPolynoms();
+                        paintAll();
+                        paint(this.getGraphics());
                     } else {
                         answer.add("Error:add:Points", "Incorrect points array");
                     }
                 }
                 if (poly != null) {
                     polynoms.addElement(poly);
-                    clearGraph();
-                    drawPoints();
-                    drawPolynoms();
+                    paintAll();
+                    paint(this.getGraphics());
                 }
                 if ((poly == null) && (pointArr == null)) {
                     answer.add("Error:add", "Nothing to add");
                 }
-            }
-            if (cmd.contains("Points:clear")) {
-                points = null;
-                clearGraph();
-            }
-            if (cmd.contains("Polynom:clearAll")) {
-                polynoms.removeAllElements();
-                clearGraph();
             }
             if (cmd.contains("getPanel")) {
                 answer.add("Panel", this);
@@ -169,7 +174,7 @@ public class Draw extends JPanel implements Module {
             if (cmd.contains("getIndex")) {
                 if (getIndexPoint != null) {
                     if (pointArr != null) {
-
+                        //code
                     }
                 }
             }
@@ -327,7 +332,7 @@ public class Draw extends JPanel implements Module {
     }
 
     private void drawBackGround() {
-        if (!isInitalized())
+        if (savedImg == null)
             return;
         Graphics g = savedImg.getGraphics();
         g.setColor(bgcolor);
@@ -391,6 +396,8 @@ public class Draw extends JPanel implements Module {
     private void drawPoints() {
         if (!isInitalized())
             return;
+        if (points == null)
+            return;
         int w = savedGraph.getWidth();
         int h = savedGraph.getHeight();
         Graphics g = savedGraph.getGraphics();
@@ -415,7 +422,7 @@ public class Draw extends JPanel implements Module {
         int w = savedGraph.getWidth();
         int h = savedGraph.getHeight();
         for (Polynom p : polynoms) {
-            g.setColor(p.getColor());
+            g.setColor(Color.BLACK);
             for (double x = xMin; x < xMax; x += step) {
                 int x1 = x2w(x, w);
                 int x2 = x2w(x + step, w);

@@ -259,6 +259,22 @@ public class Matrix2D {
 		}
 	}
 
+	public static Matrix2D createHorizontalVector(double[] vals) {
+		int size = vals.length;
+		if (size < 1)
+			return null;
+		Matrix2D res = new Matrix2D(1, size);
+		res.setrow(vals, 0);
+		return res;
+	}
+
+	public static Matrix2D createVerticalVector(double[] vals) {
+		Matrix2D res = createHorizontalVector(vals);
+		if (res != null)
+			res.transpose();
+		return res;
+	}
+
 	public static Matrix2D mul(Matrix2D a, Matrix2D b) {
 		if ((a.type == MatrixType.nullmatrix)
 				|| (b.type == MatrixType.nullmatrix)) {

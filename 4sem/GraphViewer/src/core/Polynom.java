@@ -19,6 +19,10 @@ public class Polynom {
 		line = _line.clone();
 	}
 
+	public Polynom clone() {
+		return new Polynom(line);
+	}
+
 	public double getF(double x) {
 		if (line == null)
 			return 0;
@@ -75,8 +79,6 @@ public class Polynom {
 				System.out.print(String.format("%s%s%s", sign, outs, perem));
 			}
 			System.out.println();
-			return;
 		}
-		return;
 	}
 }
