@@ -21,9 +21,10 @@ import core.Polynom;
 public class Draw extends JPanel implements Module {
     private static final long serialVersionUID = 1L;
     private static final int axisSize = 50;
-    private static final int radius = 20;
+    private static final int radius = 3;
     private double xMin, xMax, yMin, yMax, stepX, stepY;
-    private double xLim, yLim; 
+    private double xLim, yLim;
+    private double drawedAX, drawedAY;
     private boolean brdIsSet;
     private BufferedImage savedImg;
     private BufferedImage savedGraph;
@@ -35,7 +36,7 @@ public class Draw extends JPanel implements Module {
 
     public Draw() {
         brdIsSet = false;
-        polynoms = new Vector<Polynom>();
+        polynoms = new Vector<>();
         bgcolor = Color.white;
         setBorder(new EmptyBorder(0, 0, 0, 0));
         panelResized = true;
@@ -49,23 +50,30 @@ public class Draw extends JPanel implements Module {
                 super.componentResized(e);
             }
 
+
+
         });
     }
 
     @Override
     public void paint(Graphics g) {
         if (g != null) {
-            if (panelResized) {
-                savedImg = new BufferedImage(getWidth(), getHeight(),
-                        BufferedImage.TYPE_INT_RGB);
-                savedGraph = new BufferedImage(getWidth() - axisSize, getHeight()
-                        - axisSize, BufferedImage.TYPE_INT_RGB);
-                configSteps();
-                paintAll();
-                panelResized = false;
+            int W = getWidth();
+            int H = getHeight();
+            if ((W > 0) && (H > 0)) {
+                if (panelResized) {
+                    savedImg = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
+                    savedGraph = new BufferedImage(W - axisSize, H - axisSize, BufferedImage.TYPE_INT_ARGB);
+                    configSteps();
+                    paintAll();
+                    panelResized = false;
+                }
+                BufferedImage resultImage = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
+                Graphics res = resultImage.getGraphics();
+                res.drawImage(savedImg, 0, 0, null);
+                res.drawImage(savedGraph, axisSize + 1, 0, null);
+                g.drawImage(resultImage, 0, 0, null);
             }
-            g.drawImage(savedImg, 0, 0, null);
-            g.drawImage(savedGraph, axisSize + 1, 0, null);
         }
     }
 
@@ -87,54 +95,54 @@ public class Draw extends JPanel implements Module {
         Point scalePoint = p.get("Scale:point");
         Point moveOldPoint = p.get("Move:oldPoint");
         Point moveNewPoint = p.get("Move:newPoint");
-        Point getIndexPoint = p.get("getIndex:Point");
+        Point getIndexPoint = p.get("getIndex:point");
+        Point getXYPoint = p.get("getXY:point");
         // ---------------------
         Pack answer = new Pack();
         if (borders != null) {
             if ((borders[0] < borders[1]) && (borders[2] < borders[3])) {
                 setBorders(borders[0], borders[1], borders[2], borders[3]);
+                drawedAX = (int) (xMin - 1);
+                drawedAY = (int) (yMin - 1);
+                drawBackGround();
+                drawAxis();
+                paint(this.getGraphics());
             } else {
                 answer.add("Error:Borders", "Incorrect borders");
             }
         }
         if (cmd != null) {
-            if (cmd.contains("clearAllElem")) {
+            if (cmd.contains("clearAll")) {
                 points = null;
                 polynoms.removeAllElements();
-                paintAll();
-                paint(this.getGraphics());
             }
             if (cmd.contains("Points:clear")) {
                 points = null;
-                clearGraph();
-                drawPolynoms();
-                paint(this.getGraphics());
             }
-            if (cmd.contains("Polynom:clearAll")) {
+            if (cmd.contains("Polynom:clear")) {
                 polynoms.removeAllElements();
-                clearGraph();
-                drawPoints();
-                paint(this.getGraphics());
             }
             if (cmd.contains("add")) {
                 if (pointArr != null) {
                     if ((pointArr.length >= 2)
                             && (pointArr[0].length == pointArr[1].length)) {
                         points = pointArr;
-                        paintAll();
-                        paint(this.getGraphics());
                     } else {
                         answer.add("Error:add:Points", "Incorrect points array");
                     }
                 }
                 if (poly != null) {
                     polynoms.addElement(poly);
-                    paintAll();
-                    paint(this.getGraphics());
                 }
                 if ((poly == null) && (pointArr == null)) {
                     answer.add("Error:add", "Nothing to add");
                 }
+            }
+            if (cmd.contains("draw")) {
+                clearGraph();
+                drawPoints();
+                drawPolynoms();
+                paint(this.getGraphics());
             }
             if (cmd.contains("getPanel")) {
                 answer.add("Panel", this);
@@ -148,8 +156,7 @@ public class Draw extends JPanel implements Module {
                                 changeScale(scaleDirect[0], scalePoint.x - axisSize, scalePoint.y);
                             }
                         } else {
-                            answer.add("Error:changeScale",
-                                    "Incorrect direction");
+                            answer.add("Error:changeScale", "Incorrect direction");
                         }
                     } else {
                         answer.add("Error:changeScale", "Data not sent");
@@ -174,18 +181,18 @@ public class Draw extends JPanel implements Module {
             }
             if (cmd.contains("getIndex")) {
                 if (getIndexPoint != null) {
-                    if ((pointArr != null) && (savedGraph != null)) {
+                    if ((points != null) && (savedGraph != null)) {
                     	int index = -1;
-                        double x = w2x(getIndexPoint.x, savedGraph.getWidth());
-                        int len = pointArr[0].length;
-                        if (x < pointArr[0][0])
+                        double x = w2x(getIndexPoint.x - axisSize, savedGraph.getWidth());
+                        int len = points[0].length;
+                        if (x < points[0][0])
                         	index = 0;
-                        else if (x > pointArr[0][len-1])
+                        else if (x > points[0][len-1])
                         	index = len-1;
                         else {
 	                        for (int i = 0; i < len; i++) {
-	                        	if ((x > pointArr[0][i]) && (x <= pointArr[0][i+1])) {
-	                        		if (x - pointArr[0][i] > pointArr[0][i+1] - x) {
+	                        	if ((x > points[0][i]) && (x <= points[0][i+1])) {
+	                        		if (x - points[0][i] < points[0][i+1] - x) {
 	                        			index = i;
 	                        		} else {
 	                        			index = i+1;
@@ -195,14 +202,22 @@ public class Draw extends JPanel implements Module {
 	                        }
                         }
                         if (index >= 0) {
-                        	int spotX = x2w(pointArr[0][index], savedGraph.getWidth());
-                        	int spotY = y2h(pointArr[1][index], savedGraph.getHeight());
-                        	if (inDiap(getIndexPoint.x, spotX - radius, spotX + radius) && 
+                        	int spotX = x2w(points[0][index], savedGraph.getWidth());
+                        	int spotY = y2h(points[1][index], savedGraph.getHeight());
+                        	if (inDiap(getIndexPoint.x - axisSize, spotX - radius, spotX + radius) &&
                         			inDiap(getIndexPoint.y, spotY - radius, spotY + radius)) {
                         		answer.add("Index", index);
                         	}
                         }
                     }
+                }
+            }
+            if (cmd.contains("getXY")) {
+                if ((getXYPoint != null) && (savedGraph != null))  {
+                    double[] retPoint = new double[2];
+                    retPoint[0] = w2x(getXYPoint.x - axisSize, savedGraph.getWidth());
+                    retPoint[1] = h2y(getXYPoint.y, savedGraph.getHeight());
+                    answer.add("XY", retPoint);
                 }
             }
         }
@@ -344,6 +359,8 @@ public class Draw extends JPanel implements Module {
         	yMaxNew = yMax;
         }
         setBorders(xMinNew, xMaxNew, yMinNew, yMaxNew);
+        drawedAX = (int) (xMin - 1);
+        drawedAY = (int) (yMin - 1);
         paintAll();
         paint(this.getGraphics());
     }
@@ -369,8 +386,10 @@ public class Draw extends JPanel implements Module {
 
     private void clearGraph() {
         if (savedGraph != null) {
+            savedGraph = new BufferedImage(savedGraph.getWidth(), savedGraph.getHeight(), BufferedImage.TYPE_INT_ARGB);
             Graphics g = savedGraph.getGraphics();
-            g.setColor(bgcolor);
+            Color c = new Color(255, 255, 255, 0);
+            g.setColor(c);
             g.fillRect(0, 0, savedGraph.getWidth(), savedGraph.getHeight());
         }
     }
@@ -379,21 +398,36 @@ public class Draw extends JPanel implements Module {
         if (!isInitalized())
             return;
         Graphics g = savedImg.getGraphics();
-        g.setColor(Color.BLACK);
 
         int hFull = savedImg.getHeight();
         int wFull = savedImg.getWidth();
         int hGraph = hFull - axisSize;
         int wGraph = wFull - axisSize;
 
+        g.setColor(Color.LIGHT_GRAY);
+        //null
+        int nullX = x2w(0, wGraph) + axisSize;
+        int nullY = y2h(0, hGraph);
+        if (inDiap(nullX, axisSize + 1, wFull))
+            g.drawLine(nullX, 0, nullX, hGraph);
+        if (inDiap(nullY, 0, hGraph - 1))
+            g.drawLine(axisSize + 1, nullY, wFull, nullY);
+
+        g.setColor(Color.BLACK);
         g.drawLine(axisSize, 0, axisSize, hFull - axisSize); // vertical
         g.drawLine(axisSize, hFull - axisSize, wFull, hFull - axisSize); // horizontal
 
         // Y axis
-        double iY = (int) (yMin - 1);
+        int numAX = 0;
+        double iY = drawedAY;
+        while (iY > yMin)
+            iY -= stepY;
         g.setFont(fntForY);
         while (iY < yMax) {
             if (iY >= yMin) {
+                numAX++;
+                if (numAX == 1)
+                    drawedAY = iY;
                 int th = y2h(iY, hGraph);
                 g.drawLine(axisSize - 10, th, axisSize, th);
                 String label = String.format("%.2f", iY);
@@ -402,13 +436,19 @@ public class Draw extends JPanel implements Module {
             iY += stepY;
         }
         // X axis
-        double iX = (int) (xMin - 1);
+        numAX = 0;
+        double iX = drawedAX;
+        while (iX > xMin)
+            iX -= stepX;
         AffineTransform tf = new AffineTransform();
         tf.rotate(Math.toRadians(-90));
         g.setFont(fntForX.deriveFont(tf));
         FontMetrics fm = getFontMetrics(fntForX);
         while (iX < xMax) {
             if (iX >= xMin) {
+                numAX++;
+                if (numAX == 1)
+                    drawedAX = iX;
                 int tw = x2w(iX, wGraph) + axisSize;
                 g.drawLine(tw, hFull - axisSize, tw, hFull - axisSize + 10);
                 String label = String.format("%.1f", iX);
