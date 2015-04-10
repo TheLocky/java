@@ -166,8 +166,13 @@ public class MainWindow extends JFrame {
 				public void mousePressed(MouseEvent e) {
 					if (e.getButton() == MouseEvent.BUTTON1) {
 						mouseMoveLastPoint = e.getPoint();
-						if (dragMode)
+						if (dragMode) {
+							Pack drag = new Pack();
+							drag.add("getIndex", mouseMoveLastPoint);
+							Pack ans = drawModule.Request(drag);
+							ans.printAll();
 							drawPanel.setCursor(Cursor.getPredefinedCursor(Cursor.S_RESIZE_CURSOR));
+						}							
 						else
 							drawPanel.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
 					}

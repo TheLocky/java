@@ -32,7 +32,7 @@ public class Approximation extends Polynom {
 		}
 		else if (M == N) {
 			interp = new Interpolation(perems, vals);
-			super.line = new Matrix2D(interp.line);
+			super.line = interp.line.clone();
 		}
 		else {
 			int max = 2 * (N - 1) + 1;
@@ -69,6 +69,26 @@ public class Approximation extends Polynom {
 			
 			lu = new LUMethod(left);
 			super.line = lu.solve(right);
+		}
+	}
+	
+	public void changePoint(int index, double newVal) {
+		if ((index >= 0) && (index < fs.length)) {
+			double oldVal = fs[index];
+			fs[index] = newVal;
+			if (interp != null) {
+				Matrix2D tmp = Matrix2D.createVerticalVector(fs);
+				interp.recalc(tmp);
+				super.line = interp.line.clone();
+			} else {
+				for (int i = 0; i < N; ++i) {
+					double c = right.cell(i, 0);
+					c -= xpows[index][i] * oldVal;
+					c += xpows[index][i] * newVal;
+					right.cell(i, 0, c);
+				}
+				super.line = lu.solve(right);
+			}
 		}
 	}
 	

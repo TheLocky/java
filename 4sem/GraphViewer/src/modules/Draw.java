@@ -21,6 +21,7 @@ import core.Polynom;
 public class Draw extends JPanel implements Module {
     private static final long serialVersionUID = 1L;
     private static final int axisSize = 50;
+    private static final int radius = 20;
     private double xMin, xMax, yMin, yMax, stepX, stepY;
     private double xLim, yLim; 
     private boolean brdIsSet;
@@ -173,8 +174,34 @@ public class Draw extends JPanel implements Module {
             }
             if (cmd.contains("getIndex")) {
                 if (getIndexPoint != null) {
-                    if (pointArr != null) {
-                        //code
+                    if ((pointArr != null) && (savedGraph != null)) {
+                    	int index = -1;
+                        double x = w2x(getIndexPoint.x, savedGraph.getWidth());
+                        int len = pointArr[0].length;
+                        if (x < pointArr[0][0])
+                        	index = 0;
+                        else if (x > pointArr[0][len-1])
+                        	index = len-1;
+                        else {
+	                        for (int i = 0; i < len; i++) {
+	                        	if ((x > pointArr[0][i]) && (x <= pointArr[0][i+1])) {
+	                        		if (x - pointArr[0][i] > pointArr[0][i+1] - x) {
+	                        			index = i;
+	                        		} else {
+	                        			index = i+1;
+	                        		}
+	                        		break;
+	                        	}
+	                        }
+                        }
+                        if (index >= 0) {
+                        	int spotX = x2w(pointArr[0][index], savedGraph.getWidth());
+                        	int spotY = y2h(pointArr[1][index], savedGraph.getHeight());
+                        	if (inDiap(getIndexPoint.x, spotX - radius, spotX + radius) && 
+                        			inDiap(getIndexPoint.y, spotY - radius, spotY + radius)) {
+                        		answer.add("Index", index);
+                        	}
+                        }
                     }
                 }
             }
