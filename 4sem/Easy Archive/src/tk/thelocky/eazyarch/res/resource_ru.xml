@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <resources>
+        <program_name>
+            Easy Archive
+        </program_name>
+        <folder_type>
+            Папка с файлами
+        </folder_type>
+        <dia>
+            <new_arch>
+                <title>
+                    Создать новый архив
+                </title>
+                <default>
+                    Новый архив
+                </default>
+                Введите имя нового архива
+            </new_arch>
+            <new_dir>
+                <title>
+                    Создать новую папку
+                </title>
+                <default>
+                    Новая папка
+                </default>
+                Введите имя новой папки
+            </new_dir>
+            <replace>
+                <title>
+                    Файл уже существует
+                </title>
+                Заменить?
+            </replace>
+        </dia>
+    </resources>
+</root>
