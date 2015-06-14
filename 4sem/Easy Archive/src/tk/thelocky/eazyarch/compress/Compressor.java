@@ -2,7 +2,6 @@ package tk.thelocky.eazyarch.compress;
 
 import javafx.beans.property.IntegerProperty;
 import tk.thelocky.eazyarch.stream.DataIOStream;
-import tk.thelocky.eazyarch.stream.NativeFileIOStream;
 
 import java.io.IOException;
 
@@ -38,7 +37,7 @@ public interface Compressor {
      * @return Количество записанных байт
      * @throws IOException
      */
-    long compress(NativeFileIOStream inStream, DataIOStream outStream) throws IOException;
+    long compress(DataIOStream inStream, DataIOStream outStream) throws IOException;
 
     /**
      * Восстанавливает сжатый файл из потока
@@ -46,5 +45,5 @@ public interface Compressor {
      * @param outStream Выходной поток
      * @throws IOException
      */
-    boolean decompress(DataIOStream inStream, NativeFileIOStream outStream) throws IOException;
+    boolean decompress(DataIOStream inStream, DataIOStream outStream) throws IOException;
 }

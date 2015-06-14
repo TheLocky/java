@@ -16,7 +16,7 @@ public class DefaultCompressor implements Compressor {
     }
 
     @Override
-    public long compress(NativeFileIOStream inStream, DataIOStream outStream) throws IOException {
+    public long compress(DataIOStream inStream, DataIOStream outStream) throws IOException {
         long count = 0;
         progress.setValue(0);
         long size = inStream.size();
@@ -32,7 +32,7 @@ public class DefaultCompressor implements Compressor {
     }
 
     @Override
-    public boolean decompress(DataIOStream inStream, NativeFileIOStream outStream) throws IOException {
+    public boolean decompress(DataIOStream inStream, DataIOStream outStream) throws IOException {
         long count = 0;
         progress.setValue(0);
         long size = inStream.size();

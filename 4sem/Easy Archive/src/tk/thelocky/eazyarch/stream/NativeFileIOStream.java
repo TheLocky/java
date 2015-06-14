@@ -1,6 +1,6 @@
 package tk.thelocky.eazyarch.stream;
 
-public class NativeFileIOStream {
+public class NativeFileIOStream implements DataIOStream {
     private String filePath;
     private long filePointer;
 
@@ -76,5 +76,13 @@ public class NativeFileIOStream {
 
     public void flush() {
         _flush(filePointer);
+    }
+
+    public void rewind() {
+        seek(0);
+    }
+
+    public boolean fail() {
+        return false;
     }
 }
